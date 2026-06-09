@@ -2,70 +2,165 @@ import streamlit as st
 import pandas as pd
 from recommender import recommend
 
-# Page Config
+# -----------------------------------
+# PAGE CONFIG
+# -----------------------------------
+
 st.set_page_config(
     page_title="Netflix Style Recommender",
     page_icon="🎬",
     layout="wide"
 )
 
-# Dark Theme CSS
+# -----------------------------------
+# CUSTOM CSS
+# -----------------------------------
+
 st.markdown("""
 <style>
 
+/* Background */
+
 .stApp {
-    background-color: #0f172a;
-    color: white;
+    background: linear-gradient(to bottom, #141414, #000000);
 }
+
+/* Title */
 
 .main-title {
     text-align: center;
-    font-size: 50px;
+    font-size: 60px;
     font-weight: bold;
-    color: #ff4b4b;
+    color: #E50914;
+    margin-bottom: 20px;
 }
 
-.movie-card {
-    background-color: #1e293b;
-    padding: 15px;
-    border-radius: 12px;
+/* Subtitle */
+
+.subtitle {
     text-align: center;
-    margin-top: 10px;
+    color: #bbbbbb;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+/* Metric Cards */
+
+[data-testid="stMetric"] {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #333;
+}
+
+[data-testid="stMetricLabel"] {
+    color: white !important;
+}
+
+[data-testid="stMetricValue"] {
+    color: #E50914 !important;
+    font-size: 35px !important;
+}
+
+/* Inputs */
+
+.stTextInput input {
+    background-color: #262730;
+    color: white !important;
+    border-radius: 10px;
+}
+
+.stSelectbox div[data-baseweb="select"] {
+    background-color: #262730;
+    border-radius: 10px;
+}
+
+/* Button */
+
+.stButton button {
+    background-color: #E50914;
+    color: white;
+    border-radius: 10px;
+    height: 50px;
+    width: 220px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+}
+
+.stButton button:hover {
+    background-color: #ff1f1f;
+}
+
+/* Recommendation Cards */
+
+.movie-card {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    min-height: 150px;
+    box-shadow: 0px 0px 12px rgba(255,0,0,0.25);
 }
 
 .movie-card:hover {
     transform: scale(1.05);
 }
 
+/* Headers */
+
+h2, h3 {
+    color: white !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# Load Movies
+# -----------------------------------
+# LOAD DATA
+# -----------------------------------
+
 movies = pd.read_csv("movies.csv")
 
-# Header
+# -----------------------------------
+# HEADER
+# -----------------------------------
+
 st.markdown(
     "<h1 class='main-title'>🎬 Netflix Style Movie Recommender</h1>",
     unsafe_allow_html=True
 )
 
-st.write("")
+st.markdown(
+    "<p class='subtitle'>Find movies you'll love with AI-powered recommendations</p>",
+    unsafe_allow_html=True
+)
 
-# Metrics
+# -----------------------------------
+# DASHBOARD METRICS
+# -----------------------------------
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
     st.metric("🎥 Movies", len(movies))
 
 with col2:
-    st.metric("📂 Genres", 20)
+    genres_count = len(
+        set("|".join(movies["genres"]).split("|"))
+    )
+    st.metric("🎭 Genres", genres_count)
 
 with col3:
     st.metric("⭐ Recommendations", 5)
 
 st.divider()
 
-# Better Search
+# -----------------------------------
+# SEARCH
+# -----------------------------------
+
 search = st.text_input(
     "🔍 Search Movie"
 )
@@ -78,7 +173,10 @@ filtered_movies = movies[
     )
 ]
 
-# Genre Filter
+# -----------------------------------
+# GENRE FILTER
+# -----------------------------------
+
 genre_list = ["All"] + sorted(
     list(
         set(
@@ -104,33 +202,46 @@ if selected_genre != "All":
         )
     ]
 
-# Movie Selection
-selected_movie = st.selectbox(
-    "Choose Movie",
-    filtered_movies["title"].values
-)
+# -----------------------------------
+# MOVIE SELECTOR
+# -----------------------------------
 
-# Recommend
-if st.button("🍿 Recommend"):
+if len(filtered_movies) > 0:
 
-    recommendations = recommend(
-        selected_movie
+    selected_movie = st.selectbox(
+        "🎬 Choose Movie",
+        filtered_movies["title"].values
     )
 
-    st.subheader("Recommended Movies")
+    if st.button("🍿 Recommend Movies"):
 
-    cols = st.columns(5)
+        recommendations = recommend(
+            selected_movie
+        )
 
-    for i, movie in enumerate(recommendations):
+        st.markdown(
+            "<h2>🍿 Recommended Movies</h2>",
+            unsafe_allow_html=True
+        )
 
-        with cols[i]:
+        cols = st.columns(5)
 
-            st.markdown(
-                f"""
-                <div class="movie-card">
-                    <h4>{movie}</h4>
-                    <p>⭐ IMDb: N/A</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        for i, movie in enumerate(recommendations):
+
+            with cols[i]:
+
+                st.markdown(
+                    f"""
+                    <div class="movie-card">
+                        <h4>{movie}</h4>
+                        <p>⭐ Similar Movie</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+else:
+
+    st.warning(
+        "No movies found. Try another search."
+    )
