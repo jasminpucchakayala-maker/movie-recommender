@@ -12,7 +12,7 @@ Try the application online without installing anything.
 ---
 ## 📸 Application Preview
 
-![Home Page](assets/homepage.png)
+![Home Page](home.png)
 
 ---
 
