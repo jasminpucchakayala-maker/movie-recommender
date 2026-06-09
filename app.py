@@ -1,124 +1,136 @@
 import streamlit as st
 import pandas as pd
-
 from recommender import recommend
 
+# Page Config
 st.set_page_config(
-    page_title="Movie Recommender",
+    page_title="Netflix Style Recommender",
     page_icon="🎬",
     layout="wide"
 )
 
-# ---------- CSS ----------
+# Dark Theme CSS
 st.markdown("""
 <style>
 
-.main {
-    background-color: #0E1117;
-}
-
-h1 {
-    text-align: center;
+.stApp {
+    background-color: #0f172a;
     color: white;
 }
 
-.stSelectbox label {
-    color: white !important;
-    font-size: 18px;
+.main-title {
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+    color: #ff4b4b;
 }
 
-.movie-card{
-    background-color:#1c1f26;
-    padding:20px;
-    border-radius:15px;
-    margin:10px;
-    text-align:center;
-    color:white;
-    box-shadow:0px 4px 10px rgba(0,0,0,0.3);
+.movie-card {
+    background-color: #1e293b;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 10px;
 }
 
-.footer{
-    text-align:center;
-    color:gray;
-    margin-top:40px;
+.movie-card:hover {
+    transform: scale(1.05);
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Load Data ----------
-
+# Load Movies
 movies = pd.read_csv("movies.csv")
 
-# ---------- Header ----------
-
+# Header
 st.markdown(
-    "<h1>🎬 Netflix Style Movie Recommender</h1>",
+    "<h1 class='main-title'>🎬 Netflix Style Movie Recommender</h1>",
     unsafe_allow_html=True
 )
 
 st.write("")
 
-st.info(
-    "Select your favorite movie and discover similar movies."
+# Metrics
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("🎥 Movies", len(movies))
+
+with col2:
+    st.metric("📂 Genres", 20)
+
+with col3:
+    st.metric("⭐ Recommendations", 5)
+
+st.divider()
+
+# Better Search
+search = st.text_input(
+    "🔍 Search Movie"
 )
 
-# ---------- Sidebar ----------
+filtered_movies = movies[
+    movies["title"].str.contains(
+        search,
+        case=False,
+        na=False
+    )
+]
 
-st.sidebar.title("🎥 About")
+# Genre Filter
+genre_list = ["All"] + sorted(
+    list(
+        set(
+            "|".join(
+                movies["genres"]
+            ).split("|")
+        )
+    )
+)
 
-st.sidebar.write("""
-AI & Data Science Mini Project
+selected_genre = st.selectbox(
+    "🎭 Filter by Genre",
+    genre_list
+)
 
-Built using:
-- Python
-- Pandas
-- Scikit-Learn
-- Streamlit
-""")
+if selected_genre != "All":
 
-# ---------- Movie Selection ----------
+    filtered_movies = filtered_movies[
+        filtered_movies["genres"].str.contains(
+            selected_genre,
+            case=False,
+            na=False
+        )
+    ]
 
+# Movie Selection
 selected_movie = st.selectbox(
-    "Choose a Movie",
-    movies["title"].values
+    "Choose Movie",
+    filtered_movies["title"].values
 )
 
-st.write("")
-
-# ---------- Recommendation ----------
-
-if st.button("🍿 Recommend Movies"):
+# Recommend
+if st.button("🍿 Recommend"):
 
     recommendations = recommend(
         selected_movie
     )
 
-    st.subheader("You may also like")
+    st.subheader("Recommended Movies")
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    cols = st.columns(5)
 
-    cols = [col1, col2, col3, col4, col5]
-
-    for i in range(len(recommendations)):
+    for i, movie in enumerate(recommendations):
 
         with cols[i]:
 
             st.markdown(
                 f"""
                 <div class="movie-card">
-                <h3>🎬</h3>
-                <p>{recommendations[i]}</p>
+                    <h4>{movie}</h4>
+                    <p>⭐ IMDb: N/A</p>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-
-st.markdown(
-    """
-    <div class="footer">
-    Made with ❤️ using Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
-)
