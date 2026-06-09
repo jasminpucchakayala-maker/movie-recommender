@@ -48,7 +48,7 @@ h1 {
 
 # ---------- Load Data ----------
 
-movies = pd.read_csv("data/movies.csv")
+movies = pd.read_csv("movies.csv")
 
 # ---------- Header ----------
 
