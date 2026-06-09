@@ -10,6 +10,11 @@ A **Machine Learning web application** built using **Python, Pandas, Scikit-Lear
 Try the application online without installing anything.
 
 ---
+## 📸 Application Preview
+
+![Home Page](assets/homepage.png)
+
+---
 
 ## ✨ Features
 
