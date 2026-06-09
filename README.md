@@ -3,6 +3,13 @@
 A **Machine Learning web application** built using **Python, Pandas, Scikit-Learn, and Streamlit** that recommends movies based on content similarity. Users can search for a movie and instantly receive five similar movie recommendations through an interactive Netflix-inspired interface.
 
 ---
+## 🚀 Live Demo
+
+👉 (https://movie-recommendergit-j7n5r8mncp5hxa3kr2kdaf.streamlit.app/) 
+
+Try the application online without installing anything.
+
+---
 
 ## ✨ Features
 
@@ -127,8 +134,3 @@ AI & Data Science Student
 
 If you found this project helpful, consider giving it a ⭐ on GitHub!
 
-## 🚀 Live Demo
-
-👉 (https://movie-recommendergit-j7n5r8mncp5hxa3kr2kdaf.streamlit.app/) 
-
-Try the application online without installing anything.
